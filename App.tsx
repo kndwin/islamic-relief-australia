@@ -1,6 +1,11 @@
 import "react-native-gesture-handler";
-import RootStack from "./src/route";
+import { AppProviders } from "~/providers";
+import { RootStack } from "~/stack";
 
 export default function App() {
-  return <RootStack />;
+  return (
+    <AppProviders>
+      <RootStack />
+    </AppProviders>
+  );
 }

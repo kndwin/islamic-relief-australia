@@ -1,14 +1,26 @@
 import { Text, ScrollView, View, Pressable } from "react-native";
-import { Image } from "expo-image";
-import { getEvents, type Event } from "./utils";
 import { format, parseISO } from "date-fns";
+import { Feather } from "@expo/vector-icons";
+
+import { useEventQuery, type Event } from "./api";
 import type { ScreenProps } from "./stack";
+import { Image } from "~/components";
 
 export const EventScreen = ({ navigation }: ScreenProps<"Event">) => {
+  const query = useEventQuery();
   return (
     <View className="flex-1 items-center justify-center bg-white">
-      <ScrollView className="flex px-4 flex-1 max-h-[80vh]">
-        {getEvents().map((event) => (
+      <ScrollView className="flex p-4 flex-1 max-h-[80vh]">
+        <Image
+          style={{ width: "100%", height: 100, marginBottom: 20 }}
+          source={{
+            uri: "https://islamicrelief.org.au/wp-content/themes/marlin/assets/images/logo-dark.png",
+          }}
+          contentFit="contain"
+          transition={1000}
+        />
+
+        {query.data?.map((event) => (
           <EventCard
             key={event.id}
             event={event}
@@ -27,15 +39,26 @@ export const EventDetailScreen = ({ route }: ScreenProps<"EventDetails">) => {
       <Image
         style={{ width: "100%", height: 200 }}
         source={{ uri: event.imageSrc }}
-        placeholder={blurhash}
         contentFit="cover"
         transition={1000}
       />
-      <View className="p-4">
-        <Text className="text-2xl font-bold">{event.title}</Text>
-        <Text>{event.location}</Text>
-        <Text>{format(parseISO(event.date), "MMMM do, yyyy")}</Text>
-        <Text className="text-left mt-4">{event.description}</Text>
+      <View className="p-4 flex items-start">
+        <Text className="text-2xl font-bold tracking-tight text-gray-900">
+          {event.title}
+        </Text>
+        <View className="items-start mt-4">
+          <View className="flex-row items-center">
+            <Feather name="map-pin" />
+            <Text className="text-xs ml-2">{event.location}</Text>
+          </View>
+          <View className="flex-row items-center mt-2">
+            <Feather name="calendar" />
+            <Text className="text-xs ml-2">
+              {format(parseISO(event.date), "MMMM do, yyyy")}
+            </Text>
+          </View>
+        </View>
+        <Text className="text-left mt-8 text-base">{event.description}</Text>
       </View>
     </ScrollView>
   );
@@ -49,25 +72,28 @@ type EventCardProps = {
 const EventCard = ({ event, onPress }: EventCardProps) => {
   return (
     <Pressable onPress={onPress}>
-      <View className="border border-slate-500 shadow rounded my-2 overflow-hidden w-full">
+      <View className="border border-slate-200 shadow rounded-lg my-2 overflow-hidden w-full">
         <Image
           style={{ width: "100%", height: 200 }}
           source={{ uri: event.imageSrc }}
-          placeholder={blurhash}
           contentFit="cover"
           transition={1000}
         />
-        <View className="p-4 flex w-full items-start">
-          <Text className="text-2xl font-bold">{event.title}</Text>
-          <Text className="text-xs ">
-            {format(parseISO(event.date), "MMMM do, yyyy")}
+        <View className="p-4 flex w-full items-start bg-white">
+          <Text className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
+            {event.title}
           </Text>
-          <Text className="mt-4">{event.summary}</Text>
+          <View className="flex-row items-center">
+            <Feather name="calendar" />
+            <Text className="text-xs ml-2">
+              {format(parseISO(event.date), "MMMM do, yyyy")}
+            </Text>
+          </View>
+          <Text className="mt-4 mb-2 font-normal text-gray-700">
+            {event.summary}
+          </Text>
         </View>
       </View>
     </Pressable>
   );
 };
-
-const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";

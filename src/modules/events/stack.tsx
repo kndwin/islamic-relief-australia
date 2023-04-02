@@ -1,18 +1,22 @@
-import { type Event } from "./utils";
+import { type Event } from "./api";
 import {
   createStackNavigator,
   StackScreenProps,
 } from "@react-navigation/stack";
 import { EventScreen, EventDetailScreen } from "./screens";
+import { Feather } from "@expo/vector-icons";
+import { Pressable } from "react-native";
 
 type EventStackParamList = {
   Event: undefined;
   EventDetails: { event: Event };
 };
 
-export type ScreenProps<T extends keyof EventStackParamList> = StackScreenProps<
+type ScreenName = keyof EventStackParamList;
+
+export type ScreenProps<SN extends ScreenName> = StackScreenProps<
   EventStackParamList,
-  T
+  SN
 >;
 
 const Stack = createStackNavigator<EventStackParamList>();
@@ -20,8 +24,25 @@ const Stack = createStackNavigator<EventStackParamList>();
 export const EventStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Event" component={EventScreen} />
-      <Stack.Screen name="EventDetails" component={EventDetailScreen} />
+      <Stack.Screen
+        name="Event"
+        component={EventScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="EventDetails"
+        component={EventDetailScreen}
+        options={({ navigation, route }) => ({
+          headerTitle: route.params.event.title,
+          headerLeft: () => (
+            <Pressable className="pl-2" onPress={() => navigation.goBack()}>
+              <Feather name="chevron-left" size={20} />
+            </Pressable>
+          ),
+        })}
+      />
     </Stack.Navigator>
   );
 };

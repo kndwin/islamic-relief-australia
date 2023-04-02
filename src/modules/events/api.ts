@@ -1,3 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
+
 export type Event = {
   title: string;
   id: string;
@@ -8,7 +10,8 @@ export type Event = {
   imageSrc: string;
 };
 
-export const getEvents = (): Event[] => {
+const getEvents = async (): Promise<Event[]> => {
+  setTimeout(() => {}, 1_000);
   return [
     {
       title: "Earth Day Cleanup",
@@ -112,4 +115,9 @@ export const getEvents = (): Event[] => {
       imageSrc: "https://picsum.photos/seed/426/3000/2000",
     },
   ];
+};
+
+export const useEventQuery = () => {
+  const query = useQuery(["get-events"], getEvents);
+  return query;
 };
